@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>DONATOVWORLD.net | Анархия и Грифинг</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- ====== ПАНЕЛЬ ВХОДА/РЕГИСТРАЦИИ ====== -->
+    <div id="authPanel" class="auth-panel">
+        <div class="auth-container">
+            <div class="auth-logo">
+                <img src="logotips/log.jpg" alt="DW" class="auth-logo-img">
+                <h1>⚡ DONATOVWORLD</h1>
+            </div>
+            <p>Войди в свой аккаунт</p>
+            <div id="loginForm">
+                <div class="password-wrapper">
+                    <input type="text" id="loginUsername" placeholder="Никнейм" class="auth-input">
+                </div>
+                <div class="password-wrapper">
+                    <input type="password" id="loginPassword" placeholder="Пароль" class="auth-input">
+                    <button class="toggle-password" data-target="loginPassword">👁️</button>
+                </div>
+                <button id="loginBtn" class="auth-btn">Войти</button>
+                <button id="showRegisterBtn" class="auth-btn secondary">Зарегистрироваться</button>
+                <button id="showForgotBtn" class="auth-btn forgot-btn">❓ Не помню пароль</button>
+            </div>
+            <div id="registerForm" style="display:none;">
+                <div class="password-wrapper">
+                    <input type="text" id="regUsername" placeholder="Никнейм" class="auth-input">
+                </div>
+                <div class="password-wrapper">
+                    <input type="email" id="regEmail" placeholder="Email" class="auth-input">
+                </div>
+                <div class="password-wrapper">
+                    <input type="password" id="regPassword" placeholder="Пароль" class="auth-input">
+                    <button class="toggle-password" data-target="regPassword">👁️</button>
+                </div>
+                <div class="password-wrapper">
+                    <input type="password" id="regConfirm" placeholder="Подтвердите пароль" class="auth-input">
+                    <button class="toggle-password" data-target="regConfirm">👁️</button>
+                </div>
+                <button id="registerBtn" class="auth-btn">Зарегистрироваться</button>
+                <button id="showLoginBtn" class="auth-btn secondary">Уже есть аккаунт? Войти</button>
+            </div>
+            <div id="forgotForm" style="display:none;">
+                <div class="password-wrapper">
+                    <input type="text" id="forgotUsername" placeholder="Ваш никнейм" class="auth-input">
+                </div>
+                <div class="password-wrapper">
+                    <input type="email" id="forgotEmail" placeholder="Ваш email" class="auth-input">
+                </div>
+                <button id="forgotBtn" class="auth-btn">Восстановить пароль</button>
+                <button id="showLoginFromForgotBtn" class="auth-btn secondary">Вспомнил! Войти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== ОСНОВНОЙ КОНТЕНТ ====== -->
+    <div id="mainContent" style="display:none;">
+        <header class="header">
+            <div class="header-container">
+                <div class="logo">
+                    <img src="logotips/log.jpg" alt="DW" class="logo-img">
+                    <span>⚡ DONATOVWORLD</span>
+                </div>
+                <div class="header-user">
+                    <span id="userNameDisplay">Игрок</span>
+                    <span class="balance-display">🪨 <span id="balanceOre">0</span> руды</span>
+                    <span class="balance-display">💰 <span id="balanceRubles">50</span> ₽</span>
+                    <span class="balance-display">🥇 <span id="balanceGold">0</span></span>
+                    <span class="balance-display">💎 <span id="balanceDiamond">0</span></span>
+                    <span class="balance-display">📿 <span id="balanceEmerald">0</span></span>
+                    <button id="logoutBtn" class="logout-btn">Выйти</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ПРЕВЬЮШКА -->
+        <section class="hero-preview" id="heroPreview" style="background-image: url('logotips/pr.jpg'); background-size: cover; background-position: center;">
+            <canvas id="particlesCanvas"></canvas>
+            <div class="preview-content">
+                <h1 class="preview-title">DONATOVWORLD</h1>
+                <p class="preview-subtitle">⚡ Анархия. Грифинг. Беспредел. Твой мир — твои правила ⚡</p>
+                <div class="preview-buttons">
+                    <button class="preview-btn" onclick="document.getElementById('donateTab').scrollIntoView({behavior:'smooth'})">🔥 Начать игру</button>
+                    <button class="preview-btn secondary" id="casesScrollBtn">🎁 Открыть кейсы</button>
+                </div>
+            </div>
+            <div class="preview-overlay"></div>
+        </section>
+
+        <!-- НАВИГАЦИЯ -->
+        <nav class="main-nav">
+            <button class="nav-tab active" data-tab="donate">ДОНАТ</button>
+            <button class="nav-tab" data-tab="cases">КЕЙСЫ</button>
+            <button class="nav-tab" data-tab="special">СПЕЦПРЕДЛОЖЕНИЯ</button>
+            <button class="nav-tab" data-tab="profile">ПРОФИЛЬ</button>
+            <button class="nav-tab" data-tab="leaders">ЛИДЕРЫ</button>
+            <button class="nav-tab" data-tab="collect">СБОР</button>
+        </nav>
+
+        <!-- КОНТЕНТ ВКЛАДОК -->
+        <div id="tabContent">
+            <div class="tab-pane active" id="donateTab">
+                <div class="donate-header">
+                    <h2>💎 ПОПОЛНИТЬ РУДУ</h2>
+                    <div class="donate-slider">
+                        <input type="range" id="oreSlider" min="10" max="1000" value="50" step="10">
+                        <div class="slider-labels">
+                            <span>10 руды</span>
+                            <span id="oreAmountDisplay">50 руды</span>
+                            <span>1000 руды</span>
+                        </div>
+                        <div class="slider-price">Цена: <span id="orePriceDisplay">5 ₽</span></div>
+                        <button id="buyOreBtn" class="buy-btn">Пополнить руду</button>
+                    </div>
+                </div>
+                <div class="mode-switcher">
+                    <button class="mode-btn active" data-mode="anarchy">⚔️ АНАРХИЯ</button>
+                    <button class="mode-btn" data-mode="griefing">🔥 ГРИФИНГ</button>
+                </div>
+                <div id="donateGrid" class="donate-grid"></div>
+            </div>
+
+            <div class="tab-pane" id="casesTab">
+                <h2>🎁 КЕЙСЫ</h2>
+                <div class="cases-grid" id="casesGrid"></div>
+                <div id="caseResult" class="case-result"></div>
+            </div>
+
+            <div class="tab-pane" id="specialTab">
+                <h2>🎯 СПЕЦИАЛЬНЫЕ ПРЕДЛОЖЕНИЯ (раз в день)</h2>
+                <div id="specialTimers" style="margin:10px 0; font-size:0.9rem; color:#e8b44b;"></div>
+                <div class="special-grid" id="specialGrid"></div>
+            </div>
+
+            <div class="tab-pane" id="profileTab">
+                <h2>👤 ПРОФИЛЬ</h2>
+                <div class="profile-info">
+                    <p>Никнейм: <span id="profileName"></span></p>
+                    <p>Email: <span id="profileEmail"></span></p>
+                    <div class="profile-email-update">
+                        <input type="email" id="updateEmailInput" placeholder="Новый email" class="auth-input">
+                        <button id="updateEmailBtn" class="buy-btn" style="margin-top:8px;">Обновить email</button>
+                    </div>
+                    <p>Руда: <span id="profileOre"></span></p>
+                    <p>Рубли: <span id="profileRubles"></span></p>
+                    <p>🥇 Золото: <span id="profileGold">0</span></p>
+                    <p>💎 Алмазы: <span id="profileDiamond">0</span></p>
+                    <p>📿 Изумруды: <span id="profileEmerald">0</span></p>
+                    <h3>📜 История покупок</h3>
+                    <div id="historyList"></div>
+                </div>
+            </div>
+
+            <div class="tab-pane" id="leadersTab">
+                <h2>🏆 ТАБЛИЦА ЛИДЕРОВ</h2>
+                <div id="leadersList"></div>
+            </div>
+
+            <div class="tab-pane" id="collectTab">
+                <h2>✨ СОБЕРИ РЕСУРСЫ</h2>
+                <p>Кликай на падающие ресурсы и собирай их!</p>
+                <div id="collectArea" class="collect-area"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛКИ -->
+    <div id="purchaseModal" class="purchase-modal">
+        <div class="purchase-content">
+            <h2 id="purchaseTitle">Оформление покупки</h2>
+            <div id="purchaseDesc" style="font-size:0.8rem; color:#8a8a9a; margin:8px 0;"></div>
+            <input type="text" id="purchaseNick" placeholder="Ваш никнейм" class="auth-input">
+            <input type="email" id="purchaseEmail" placeholder="Ваш email (обязательно)" class="auth-input" required>
+            <input type="text" id="purchasePromo" placeholder="Промокод (если есть)" class="auth-input">
+            <div id="purchasePrice" style="font-size:1.2rem; margin:12px 0; color:#e8b44b;"></div>
+            <div class="payment-methods" style="display:flex; gap:12px; margin:10px 0; justify-content:center;"></div>
+            <button id="purchaseConfirmBtn" class="buy-btn" style="width:100%;">Оплатить</button>
+            <button id="purchaseCloseBtn" class="auth-btn secondary" style="width:100%; margin-top:8px;">Закрыть</button>
+        </div>
+    </div>
+
+    <div id="receiptModal" class="receipt-modal">
+        <div class="receipt-content">
+            <h2>🧾 ЧЕК</h2>
+            <div id="receiptText"></div>
+            <div id="receiptActions" style="margin:12px 0; display:flex; gap:12px; justify-content:center;">
+                <button class="receipt-action-btn" data-action="server" style="background:#e8b44b; border:none; padding:8px 20px; border-radius:40px; font-weight:bold; cursor:pointer;">🎮 Открыть на сервере</button>
+                <button class="receipt-action-btn" data-action="site" style="background:#1a1c2a; border:1px solid #e8b44b; color:#e8b44b; padding:8px 20px; border-radius:40px; font-weight:bold; cursor:pointer;">🌐 Открыть на сайте</button>
+            </div>
+            <button id="closeReceiptBtn" class="close-receipt">Закрыть</button>
+        </div>
+    </div>
+
+    <div id="detailsModal" class="details-modal">
+        <div class="details-content">
+            <h2 id="detailsTitle">📜 Команды</h2>
+            <div id="detailsCommands" style="font-size:0.8rem; color:#8a8a9a; margin:12px 0; white-space:pre-wrap;"></div>
+            <button id="detailsCloseBtn" class="close-receipt">Закрыть</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
