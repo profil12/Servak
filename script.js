@@ -562,7 +562,7 @@ const casesData = [
     { id: 'prefix', name: 'Кейс с префиксом', icon: 'ca/pr.jpeg', price: 20, type: 'prefix', prefixes: ['[RAIDER]', '[WARRIOR]', '[DRAGON]', '[GOD]', '[SHADOW]', '[BERSERK]', '[OVERLORD]', '[IMMORTAL]', '[PYRO]', '[TITAN]', '[AVENGER]', '[MAGISTER]', '[IMPERATOR]', '[NOMAD]', '[WANDERER]', '[SABOTEUR]', '[DESTROYER]', '[PHANTOM]', '[NIGHTFALL]', '[STARFALL]', '[VOIDWALKER]', '[ASHBRINGER]'] },
     { id: 'kit', name: 'Кейс с китом', icon: 'ca/ki.jpeg', price: 40, type: 'kit' },
     { id: 'items', name: 'Кейс с вещами', icon: 'ca/ve.jpeg', price: 15, type: 'items', items: ['Яйцо крипера', 'Зелье силы', 'Блок алмаза', 'Незерит', 'ТНТ', 'Обсидиан', 'Золотой блок', 'Жемчуг Эндера'] },
-    { id: 'currency', name: 'Кейс с игровой валютой', icon: 'ca/vu.jpeg', price: 22, type: 'currency', min: 40000, max: 2000000 },
+    { id: 'currency', name: 'Кейс с игровой валютой', icon: 'ca/va.jpeg', price: 22, type: 'currency', min: 40000, max: 2000000 },
     { id: 'donate_privilege', name: 'Кейс с донат-привилегией', icon: 'ca/do.jpeg', price: 27, type: 'donate_privilege' }
 ];
 
@@ -975,7 +975,7 @@ function renderCases() {
 const specialData = [
     { id: 'special_prefix', name: 'Кейс с префиксом (навсегда)', icon: 'ca/pr.jpeg', price: 70, currency: 'gold', desc: 'Случайный префикс навсегда' },
     { id: 'special_donate', name: 'Кейс с донат-привилегией', icon: 'ca/do.jpeg', price: 90, currency: 'emerald', desc: 'Случайная привилегия' },
-    { id: 'special_currency', name: 'Кейс с игровой валютой', icon: 'ca/vu.jpeg', price: 60, currency: 'diamond', desc: 'Случайное количество монет (40 000 – 2 000 000)' },
+    { id: 'special_currency', name: 'Кейс с игровой валютой', icon: 'ca/va.jpeg', price: 60, currency: 'diamond', desc: 'Случайное количество монет (40 000 – 2 000 000)' },
     { id: 'special_promo', name: 'Рандомный промокод на скидку', icon: 'ca/pro.jpeg', price: 37, currency: 'diamond', desc: 'Случайный промокод на скидку 10-50%' }
 ];
 
