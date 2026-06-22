@@ -2,10 +2,12 @@ let currentUser = null;
 let users = JSON.parse(localStorage.getItem('donatovUsers')) || {};
 let userData = JSON.parse(localStorage.getItem('donatovUserData')) || {};
 let dailySpecial = JSON.parse(localStorage.getItem('donatovDaily')) || {};
+let activePromoCodes = JSON.parse(localStorage.getItem('donatovPromoCodes')) || {};
 
 function saveUsers() { localStorage.setItem('donatovUsers', JSON.stringify(users)); }
 function saveUserData() { localStorage.setItem('donatovUserData', JSON.stringify(userData)); }
 function saveDaily() { localStorage.setItem('donatovDaily', JSON.stringify(dailySpecial)); }
+function savePromoCodes() { localStorage.setItem('donatovPromoCodes', JSON.stringify(activePromoCodes)); }
 
 function initUserData(username) {
     if (!userData[username]) {
@@ -20,7 +22,8 @@ function initUserData(username) {
             donations: [],
             cases: [],
             lastSpecial: 0,
-            specialCooldowns: {}
+            specialCooldowns: {},
+            promoCodes: [] // сохраняем полученные промокоды
         };
         saveUserData();
     }
@@ -111,7 +114,6 @@ document.getElementById('loginBtn').onclick = () => {
     renderLeaders();
     startSpecialTimers();
     setTimeout(initParticles, 500);
-    // Курсор уже есть, он глобальный!
 };
 
 document.getElementById('forgotBtn').onclick = () => {
@@ -136,7 +138,10 @@ document.getElementById('logoutBtn').onclick = () => {
     currentUser = null;
     document.getElementById('mainContent').style.display = 'none';
     document.getElementById('authPanel').style.display = 'flex';
-    // Курсор остается, не удаляем!
+    const cursor = document.querySelector('.custom-cursor');
+    if (cursor) cursor.remove();
+    const style = document.querySelector('style[data-cursor]');
+    if (style) style.remove();
 };
 
 function updateUI() {
@@ -355,7 +360,7 @@ function applyPromoCode() {
     const priceDisplay = document.getElementById('purchasePrice');
     const promo = promoInput.value.trim().toUpperCase();
     
-    const promoCodes = {
+    const basePromoCodes = {
         'DONATOV10': 0.9,
         'VIP2025': 0.85,
         'ANARCHY': 0.8,
@@ -366,20 +371,31 @@ function applyPromoCode() {
         'WELCOME': 0.9
     };
     
-    if (promo && promoCodes[promo]) {
-        const discount = promoCodes[promo];
+    const allPromoCodes = { ...basePromoCodes };
+    
+    for (const [code, discount] of Object.entries(activePromoCodes)) {
+        if (!allPromoCodes[code]) {
+            allPromoCodes[code] = discount;
+        }
+    }
+    
+    if (promo && allPromoCodes[promo]) {
+        const discount = allPromoCodes[promo];
         const newPrice = Math.round(currentPurchase.price * discount);
         priceDisplay.innerHTML = `💰 Цена: <span style="color: #ff6666; text-decoration: line-through;">${currentPurchase.price} ₽</span> → <span style="color: #44ff44; font-weight: bold;">${newPrice} ₽</span> (скидка ${Math.round((1-discount)*100)}%)`;
         currentPurchase.discountedPrice = newPrice;
         currentPurchase.discountApplied = true;
+        currentPurchase.appliedPromo = promo;
     } else if (promo) {
-        priceDisplay.innerHTML = `💰 Цена: <span style="color: #ff6666;">${currentPurchase.price} ₽</span> ❌ Неверный промокод`;
+        priceDisplay.innerHTML = `💰 Цена: <span style="color: #ff6666;">${currentPurchase.price} ₽</span> ❌ Неверный или просроченный промокод`;
         currentPurchase.discountApplied = false;
         delete currentPurchase.discountedPrice;
+        delete currentPurchase.appliedPromo;
     } else {
         priceDisplay.innerHTML = `💰 Цена: ${currentPurchase.price} ₽`;
         currentPurchase.discountApplied = false;
         delete currentPurchase.discountedPrice;
+        delete currentPurchase.appliedPromo;
     }
 }
 
@@ -418,6 +434,12 @@ function completePurchase() {
     let finalPrice = currentPurchase.price;
     if (currentPurchase.discountApplied && currentPurchase.discountedPrice) {
         finalPrice = currentPurchase.discountedPrice;
+        
+        if (currentPurchase.appliedPromo && activePromoCodes[currentPurchase.appliedPromo]) {
+            delete activePromoCodes[currentPurchase.appliedPromo];
+            savePromoCodes();
+            showToast(`✅ Промокод ${currentPurchase.appliedPromo} активирован!`);
+        }
     }
 
     if (data.rubles < finalPrice) {
@@ -540,7 +562,7 @@ const casesData = [
     { id: 'prefix', name: 'Кейс с префиксом', icon: 'ca/pr.jpeg', price: 20, type: 'prefix', prefixes: ['[RAIDER]', '[WARRIOR]', '[DRAGON]', '[GOD]', '[SHADOW]', '[BERSERK]', '[OVERLORD]', '[IMMORTAL]', '[PYRO]', '[TITAN]', '[AVENGER]', '[MAGISTER]', '[IMPERATOR]', '[NOMAD]', '[WANDERER]', '[SABOTEUR]', '[DESTROYER]', '[PHANTOM]', '[NIGHTFALL]', '[STARFALL]', '[VOIDWALKER]', '[ASHBRINGER]'] },
     { id: 'kit', name: 'Кейс с китом', icon: 'ca/ki.jpeg', price: 40, type: 'kit' },
     { id: 'items', name: 'Кейс с вещами', icon: 'ca/ve.jpeg', price: 15, type: 'items', items: ['Яйцо крипера', 'Зелье силы', 'Блок алмаза', 'Незерит', 'ТНТ', 'Обсидиан', 'Золотой блок', 'Жемчуг Эндера'] },
-    { id: 'currency', name: 'Кейс с игровой валютой', icon: 'ca/va.jpeg', price: 22, type: 'currency', min: 40000, max: 2000000 },
+    { id: 'currency', name: 'Кейс с игровой валютой', icon: 'ca/vu.jpeg', price: 22, type: 'currency', min: 40000, max: 2000000 },
     { id: 'donate_privilege', name: 'Кейс с донат-привилегией', icon: 'ca/do.jpeg', price: 27, type: 'donate_privilege' }
 ];
 
@@ -953,7 +975,7 @@ function renderCases() {
 const specialData = [
     { id: 'special_prefix', name: 'Кейс с префиксом (навсегда)', icon: 'ca/pr.jpeg', price: 70, currency: 'gold', desc: 'Случайный префикс навсегда' },
     { id: 'special_donate', name: 'Кейс с донат-привилегией', icon: 'ca/do.jpeg', price: 90, currency: 'emerald', desc: 'Случайная привилегия' },
-    { id: 'special_currency', name: 'Кейс с игровой валютой', icon: 'ca/va.jpeg', price: 60, currency: 'diamond', desc: 'Случайное количество монет (40 000 – 2 000 000)' },
+    { id: 'special_currency', name: 'Кейс с игровой валютой', icon: 'ca/vu.jpeg', price: 60, currency: 'diamond', desc: 'Случайное количество монет (40 000 – 2 000 000)' },
     { id: 'special_promo', name: 'Рандомный промокод на скидку', icon: 'ca/pro.jpeg', price: 37, currency: 'diamond', desc: 'Случайный промокод на скидку 10-50%' }
 ];
 
@@ -1023,9 +1045,18 @@ function renderSpecial() {
             } else if (special.id === 'special_promo') {
                 const discounts = [10, 15, 20, 25, 30, 40, 50];
                 const disc = discounts[Math.floor(Math.random() * discounts.length)];
+                const discountDecimal = disc / 100;
                 const promoCode = 'PROMO' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                
+                // Сохраняем промокод
+                activePromoCodes[promoCode] = discountDecimal;
+                savePromoCodes();
+                
                 result = `🎉 Промокод: ${promoCode} на скидку ${disc}%! Используйте при покупке.`;
                 data.history.push({ type: `Получен промокод ${promoCode}`, disc });
+                // Сохраняем в историю пользователя
+                if (!data.promoCodes) data.promoCodes = [];
+                data.promoCodes.push({ code: promoCode, discount: disc, used: false });
             }
             data.history.push({ type: `Спецпредложение: ${special.name}`, result });
             saveUserData();
@@ -1260,11 +1291,8 @@ function initParticles() {
     });
 }
 
-// ====== ГЛОБАЛЬНЫЙ КУРСОР - работает везде, всегда! ======
 function initCustomCursor() {
-    // На мобилках не показываем
     if (window.innerWidth < 768) return;
-    // Если уже есть - не создаем второй
     if (document.querySelector('.custom-cursor')) return;
     
     const style = document.createElement('style');
@@ -1306,7 +1334,6 @@ function initCustomCursor() {
         }
     `;
     document.head.appendChild(style);
-    
     const cursor = document.createElement('div');
     cursor.className = 'custom-cursor';
     document.body.appendChild(cursor);
@@ -1447,7 +1474,6 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Включаем курсор сразу при загрузке страницы (до входа!)
     initCustomCursor();
     
     const casesBtn = document.getElementById('casesScrollBtn');
@@ -1478,7 +1504,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Проверяем курсор каждые 3 секунды
 setInterval(() => {
     if (!document.querySelector('.custom-cursor') && window.innerWidth >= 768) {
         initCustomCursor();
